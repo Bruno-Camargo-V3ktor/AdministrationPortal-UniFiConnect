@@ -1,6 +1,8 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use crate::pages::approver_code::ApproverCodePage;
+
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
     #[at("/")]
@@ -12,7 +14,7 @@ enum Route {
 fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <h1>{"Home"}</h1> },
-        Route::ApproverGeneratedCode => html! { <main></main> },
+        Route::ApproverGeneratedCode => html! { <> <ApproverCodePage /> </> },
     }
 }
 
