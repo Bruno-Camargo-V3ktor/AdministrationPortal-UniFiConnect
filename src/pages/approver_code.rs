@@ -1,9 +1,18 @@
 use gloo_net::http::Request;
+use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
+// Structs
+#[derive(Deserialize)]
+struct ApproverCode {
+    pub code: String,
+    pub days: u32,
+}
+
+// Components
 #[function_component(ApproverCodePage)]
 pub fn index() -> Html {
     // States
@@ -11,6 +20,7 @@ pub fn index() -> Html {
     let password = use_state(|| String::new());
     let error_menssage = use_state(|| None::<String>);
     let show_modal = use_state(|| false);
+    let approver_code = use_state(|| None::<ApproverCode>);
 
     // Callbacks
     let on_username_input = {
@@ -30,19 +40,21 @@ pub fn index() -> Html {
     };
 
     let on_submit = {
-        let username_clone = username.clone();
-        let password_clone = password.clone();
-        let error_menssage_clone = error_menssage.clone();
-        let show_modal_clone = show_modal.clone();
+        let username = username.clone();
+        let password = password.clone();
+        let error_menssage = error_menssage.clone();
+        let show_modal = show_modal.clone();
+        let approver_code = approver_code.clone();
 
         Callback::from(move |e: SubmitEvent| {
             e.prevent_default();
 
-            let username_value = (*username_clone).clone();
-            let password_value = (*password_clone).clone();
+            let username_value = (*username).clone();
+            let password_value = (*password).clone();
+            let approver_code = approver_code.clone();
 
-            let error_menssage = error_menssage_clone.clone();
-            let show_modal = show_modal_clone.clone();
+            let error_menssage = error_menssage.clone();
+            let show_modal = show_modal.clone();
 
             spawn_local(async move {
                 let data = json!({
@@ -50,7 +62,7 @@ pub fn index() -> Html {
                     "password": password_value
                 });
 
-                let response = Request::post("")
+                let response = Request::put(".../api/approver/code")
                     .header("Content-Type", "application/json")
                     .body(data.to_string())
                     .unwrap()
@@ -60,8 +72,7 @@ pub fn index() -> Html {
                 match response {
                     Ok(r) => match r.status() {
                         200 => {
-                            let _json: serde_json::Value = r.json().await.unwrap_or_default();
-
+                            approver_code.set(r.json().await.ok());
                             show_modal.set(true);
                             error_menssage.set(None);
                         }
@@ -84,6 +95,7 @@ pub fn index() -> Html {
 
     // Render
     html! {
+        <div class={classes!("approver-code-page-container")}>
         <div class={classes!("login-container")}>
             <form onsubmit={on_submit}>
                 <div class={classes!("input-group")}>
@@ -112,8 +124,26 @@ pub fn index() -> Html {
                     html! {
                         <div class="modal">
                             <div class="modal-content">
-                                <h2>{"Editar Conteúdo"}</h2>
-                                    <button onclick={Callback::from(move |_| show_modal.set(false))}>{"Fechar"}</button>
+                                {
+                                    if let Some(data) = &*approver_code {
+                                        html! {
+                                            <>
+                                                <h2>{"Codigo Gerado"}</h2>
+                                                <p>
+                                                    {"O novo codigo e "}
+                                                    <span class={classes!("special-text")}>{data.code.clone()}</span>
+                                                    {", Valido por "}
+                                                    <span class={classes!("special-text")}>{data.days}</span>
+                                                    {" dia(s)."}
+                                                </p>
+                                            </>
+                                        }
+                                    }
+
+                                    else { html! {} }
+                                }
+
+                                <button onclick={Callback::from(move |_| show_modal.set(false))}>{"Fechar"}</button>
                             </div>
                         </div>
                     }
@@ -122,6 +152,7 @@ pub fn index() -> Html {
                 }
             }
 
+        </div>
         </div>
     }
 }

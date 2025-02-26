@@ -13,7 +13,7 @@ enum Route {
 
 fn switch(routes: Route) -> Html {
     match routes {
-        Route::Home => html! { <h1>{"Home"}</h1> },
+        Route::Home => html! { <></> },
         Route::ApproverGeneratedCode => html! { <> <ApproverCodePage /> </> },
     }
 }
