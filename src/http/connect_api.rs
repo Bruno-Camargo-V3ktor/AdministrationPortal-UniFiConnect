@@ -1,6 +1,6 @@
 use gloo_net::http::Request;
 use serde_json::json;
-use crate::models::approver::ApproverCode;
+use crate::models::{admin::AdminToken, approver::ApproverCode};
 
 
 
@@ -27,6 +27,31 @@ impl UnifiConnect {
         match response {
             Ok(r) => match r.status() {
                 200 => Ok( r.json::<ApproverCode>().await.ok() ),
+
+                _ => Ok(None),
+            },
+
+            _ => Err(()),
+        }
+
+    }
+
+    pub async fn get_admin_token(username: &String, password: &String) -> Result<Option<AdminToken>, ()> {
+        let data = json!({
+            "username": username,
+            "password": password
+        });
+
+        let response = Request::post( format!("{}/api/admin/login", Self::URL).as_str() )
+                .header("Content-Type", "application/json")
+                .body(data.to_string())
+                .unwrap()
+                .send()
+                .await;
+
+        match response {
+            Ok(r) => match r.status() {
+                202 => Ok( r.json::<AdminToken>().await.ok() ),
 
                 _ => Ok(None),
             },
