@@ -12,8 +12,8 @@ main {
     text-align: center;
 }
 
-// Approver Generation Code Page
-.approver-code-page-container {
+// Approver Generation Code Page / Login Page
+.approver-code-page-container, .login-page-container {
     background: linear-gradient(135deg, #ff7e00, #ffa500);
     min-height: 100vh;
     display: flex;
