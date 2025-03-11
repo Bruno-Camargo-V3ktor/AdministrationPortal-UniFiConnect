@@ -1,16 +1,6 @@
-use gloo_net::http::Request;
-use serde::Deserialize;
-use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use crate::components::form_login::FormLogin;
-
-// Structs
-#[derive(Deserialize)]
-struct ApproverCode {
-    pub new_code: String,
-    pub days: u32,
-}
+use crate::{components::form_login::FormLogin, http::connect_api::UnifiConnect, models::approver::ApproverCode};
 
 // Components
 #[function_component(ApproverCodePage)]
@@ -42,24 +32,15 @@ pub fn index() -> Html {
                 let approver_code = approver_code.clone();
                 let error_menssage = error_menssage.clone();
                 let show_modal = show_modal.clone();
-    
+                
+
                 spawn_local(async move {
-                    let data = json!({
-                        "username": username,
-                        "password": password
-                    });
+                    let res = UnifiConnect::generate_approver_code(&username, &password).await;
     
-                    let response = Request::put("-")
-                        .header("Content-Type", "application/json")
-                        .body(data.to_string())
-                        .unwrap()
-                        .send()
-                        .await;
-    
-                    match response {
-                        Ok(r) => match r.status() {
-                            200 => {
-                                approver_code.set(r.json().await.ok());
+                    match res {
+                        Ok(op) => match op {
+                            Some(ap_code) => {
+                                approver_code.set( Some(ap_code) );
                                 show_modal.set(true);
                                 error_menssage.set(None);
                             }

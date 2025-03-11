@@ -3,6 +3,8 @@ mod pages;
 mod routes;
 mod components;
 mod contexts;
+mod http;
+mod models;
 
 use app::App;
 
