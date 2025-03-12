@@ -2,6 +2,9 @@ use yew::prelude::*;
 
 use crate::models::admin::AdminToken;
 
+// Types
+pub type AdminAuthorizationCtx = UseStateHandle<AdminAuthorization>;
+
 // Struct
 #[derive(Properties, PartialEq)]
 pub struct PropsAdminAuthorizationContext {
@@ -41,15 +44,21 @@ pub fn admin_authorization_context(props: &PropsAdminAuthorizationContext) -> Ht
         })
     };
     
-    // Context Build
-    ctx.set( AdminAuthorization { set_token: set_token_callback, token_admin: ctx.token_admin.clone()  } );  
+    
+    // Effects
+    {
+        let ctx = ctx.clone();
+        use_effect_with((), move |_| {
+            ctx.set( AdminAuthorization { set_token: set_token_callback, token_admin: ctx.token_admin.clone()  } );
+        });
+    }
 
     // View
     html! {
         <>
-            <ContextProvider<AdminAuthorization> context={ (*ctx).clone() } >
+            <ContextProvider< UseStateHandle<AdminAuthorization> > context={ ctx.clone() } >
                 { props.children.clone() }
-            </ContextProvider<AdminAuthorization>  >
+            </ContextProvider< UseStateHandle<AdminAuthorization>  > >
         </>
     }
 }

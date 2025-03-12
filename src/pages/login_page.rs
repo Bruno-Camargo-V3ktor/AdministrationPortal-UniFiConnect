@@ -1,24 +1,32 @@
 use wasm_bindgen_futures::spawn_local;
-use yew::{classes, function_component, html, use_state, Callback, Html, SubmitEvent};
+use yew::{classes, function_component, html, use_context, use_state, Callback, Html, SubmitEvent};
+use yew_router::hooks::use_navigator;
 
-use crate::{components::form_login::FormLogin, http::connect_api::UnifiConnect};
+use crate::{components::form_login::FormLogin, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::UnifiConnect, routes::Route};
 
 
 // Components
 #[function_component(LoginPage)]
 pub fn page_login() -> Html {
-    // States
+    
+    // States & Props
     let error_msg = use_state(|| None::<String>);
+    let admin_authorization_ctx = use_context::<AdminAuthorizationCtx>().unwrap();
+    let navigator = use_navigator().unwrap();
 
     // Callbacks
     let on_submit = {
         let error_msg = error_msg.clone();
+        let ctx = admin_authorization_ctx.clone();
+        let nav = navigator.clone();
 
         Callback::from(move |(username, password): (String, String)| 
         {
             let username = username.clone();
             let password = password.clone();
             let error_msg = error_msg.clone();
+            let ctx = ctx.clone();
+            let nav = nav.clone();
 
             Callback::from(move |e: SubmitEvent|
             {
@@ -26,6 +34,8 @@ pub fn page_login() -> Html {
                 let username = username.clone();
                 let password = password.clone();
                 let error_msg = error_msg.clone();
+                let ctx = ctx.clone();
+                let nav = nav.clone();
 
                 spawn_local( async move {
                     let res = UnifiConnect::get_admin_token(&username, &password).await;
@@ -33,7 +43,8 @@ pub fn page_login() -> Html {
                     match res {
                         Ok(op) => match op {
                             Some(token) => {
-                                web_sys::console::log_1(&token.token.into());
+                                ctx.set_token.emit( Some(token) );
+                                nav.push(&Route::Pending);
                                 error_msg.set(None);
                             }
     

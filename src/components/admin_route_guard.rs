@@ -1,7 +1,7 @@
 use yew::{function_component, html, use_context, use_effect_with, Html, Properties};
 use yew_router::hooks::use_navigator;
 
-use crate::{contexts::admin_authorization::AdminAuthorization, routes::Route};
+use crate::{contexts::admin_authorization::AdminAuthorizationCtx, routes::Route};
 
 
 // Struct
@@ -16,7 +16,7 @@ pub struct RouteGuardProps {
 pub fn admin_route_guard(props: &RouteGuardProps) -> Html {
     
     // Props
-    let admin_authorization_ctx = use_context::<AdminAuthorization>().unwrap_or(AdminAuthorization::default());
+    let admin_authorization_ctx = use_context::<AdminAuthorizationCtx>().unwrap();
     let navigator = use_navigator().unwrap();
     
     // Effects
