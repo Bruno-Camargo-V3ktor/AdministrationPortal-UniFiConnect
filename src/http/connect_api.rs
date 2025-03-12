@@ -80,7 +80,10 @@ impl UnifiConnect {
         
         match response {
             Ok(r) => match r.status() {
-                200 => Ok( r.json::<Vec<Client>>().await.unwrap() ),
+                200 => {
+                    let json = r.text().await.unwrap_or("".to_string());
+                    Ok( serde_json::from_str::<Vec<Client>>(json.as_str()).unwrap_or(Vec::new()) )
+                },
                 401 => Err( ErrorReq::Unauthorized ),
                 _ => Err( ErrorReq::BadRequest )
             },
