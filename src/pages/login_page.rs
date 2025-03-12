@@ -43,7 +43,7 @@ pub fn page_login() -> Html {
                     match res {
                         Ok(op) => match op {
                             Some(token) => {
-                                ctx.set_token.emit( Some(token) );
+                                ctx.set_token.emit( Some(token.clone()) );
                                 nav.push(&Route::Pending);
                                 error_msg.set(None);
                             }

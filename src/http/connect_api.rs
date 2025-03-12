@@ -4,9 +4,11 @@ use crate::models::{admin::AdminToken, approver::ApproverCode, client::Client};
 
 
 // Enums
+#[derive(Debug)]
 pub enum ErrorReq {
     Unauthorized,
     InternalError,
+    BadRequest,
 }
 
 // Struct
@@ -42,7 +44,7 @@ impl UnifiConnect {
     }
 
     pub async fn get_admin_token(username: &String, password: &String) -> Result<Option<AdminToken>, ErrorReq> {
-         let data = json!({
+        let data = json!({
             "username": username,
             "password": password
         });
@@ -79,7 +81,8 @@ impl UnifiConnect {
         match response {
             Ok(r) => match r.status() {
                 200 => Ok( r.json::<Vec<Client>>().await.unwrap() ),
-                _ => Err( ErrorReq::Unauthorized )
+                401 => Err( ErrorReq::Unauthorized ),
+                _ => Err( ErrorReq::BadRequest )
             },
 
             _ => Err( ErrorReq::InternalError )
@@ -87,6 +90,66 @@ impl UnifiConnect {
         }
     }
     
+    pub async fn approving_client_by_id(token: AdminToken, id: String) -> Result<(), ErrorReq> {
+        let data = json!({
+            "id": id,
+            "connect": true,
+            
+            "mac": "",
+            "site": "",
+            "minutes": 0,
+        });
 
+        let response = Request::post( format!("{}/api/admin/login", Self::URL).as_str() )
+            .header( "Content-Type", "application/json" )
+            .header( "Authorization", format!("Bearer {}", token.token).as_str() )
+            .body(data.to_string())
+            .unwrap()
+            .send()
+            .await;
+
+        match response {
+            Ok(r) => match r.status() {
+                200 => Ok( () ),
+                401 => Err( ErrorReq::Unauthorized ),
+                _ => Err( ErrorReq::BadRequest )
+            },
+
+            _ => Err( ErrorReq::InternalError )
+
+        }
+
+    } 
+    
+     pub async fn rejecting_client_by_id(token: AdminToken, id: String) -> Result<(), ErrorReq> {
+        let data = json!({
+            "id": id,
+            "connect": false,
+            
+            "mac": "",
+            "site": "",
+            "minutes": 0,
+        });
+
+        let response = Request::post( format!("{}/api/admin/login", Self::URL).as_str() )
+            .header( "Content-Type", "application/json" )
+            .header( "Authorization", format!("Bearer {}", token.token).as_str() )
+            .body(data.to_string())
+            .unwrap()
+            .send()
+            .await;
+
+        match response {
+            Ok(r) => match r.status() {
+                200 => Ok( () ),
+                401 => Err( ErrorReq::Unauthorized ),
+                _ => Err( ErrorReq::BadRequest )
+            },
+
+            _ => Err( ErrorReq::InternalError )
+
+        }
+
+    }
 
 }
