@@ -1,23 +1,31 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::pages::{approver_code::ApproverCodePage, login_page::LoginPage};
+use crate::{components::admin_route_guard::AdminRouteGuard, pages::{approver_code::ApproverCodePage, login_page::LoginPage}};
 
 #[derive(Clone, Routable, PartialEq)]
-enum Route {
+pub enum Route {
     #[at("/")]
     Home,
+    #[at("/pending")]
+    Pending,
     #[at("/login")]
     Login,
     #[at("/approver/code")]
     ApproverGeneratedCode,
+    #[not_found]
+    #[at("/404")]
+    NotFound,
 }
 
-fn switch(routes: Route) -> Html {
+fn switch(routes: Route) -> Html { 
     match routes {
-        Route::Home => html! { <></> },
+        Route::Home => html! {  <AdminRouteGuard> <></> </AdminRouteGuard> },
+        Route::Pending => html! { <AdminRouteGuard> <></> </AdminRouteGuard> },
         Route::Login => html! { <> <LoginPage /> </> },
         Route::ApproverGeneratedCode => html! { <> <ApproverCodePage /> </> },
+
+        Route::NotFound => html! { <AdminRouteGuard> <> <h1>{"Not Found"}</h1> </> </AdminRouteGuard> }
     }
 }
 
