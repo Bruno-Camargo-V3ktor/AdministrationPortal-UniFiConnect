@@ -65,7 +65,7 @@ pub fn index() -> Html {
     // Render
     html! {
         <div class={classes!("approver-code-page-container")}>
-            <FormLogin error_menssage={(*error_menssage).clone()} on_handle_click={on_submit.clone()} />
+            <FormLogin error_menssage={(*error_menssage).clone()} on_handle_click={on_submit.clone()} btn_text={"Gerar Código".to_string()} />
 
             {
                 if *show_modal {

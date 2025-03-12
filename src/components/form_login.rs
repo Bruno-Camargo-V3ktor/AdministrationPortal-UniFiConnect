@@ -5,7 +5,8 @@ use yew::{function_component, html, use_state, Callback, Html, InputEvent, Prope
 #[derive(Properties, PartialEq)]
 pub struct FormLoginProps {
     pub on_handle_click: Callback<(String, String), Callback<SubmitEvent>>,
-    pub error_menssage: Option<String>
+    pub error_menssage: Option<String>,
+    pub btn_text: String,
 }
 
 // Components
@@ -16,7 +17,7 @@ pub fn form_login(props: &FormLoginProps) -> Html {
     let username = use_state(|| String::new());
     let password = use_state(|| String::new());
 
-    // Callbacks
+    // Callbacks     
     let on_username_input = {
         let username = username.clone();
         
@@ -50,7 +51,7 @@ pub fn form_login(props: &FormLoginProps) -> Html {
                         <input id="password" type="password" value={(*password).clone()} oninput={on_password_input} />
                     </div>
 
-                    <button type="submit">{"Gerar Codigo"}</button>
+                    <button type="submit">{ props.btn_text.clone() }</button>
                 </form>
 
                 {

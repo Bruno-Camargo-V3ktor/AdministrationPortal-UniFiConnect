@@ -71,7 +71,7 @@ pub fn page_login() -> Html {
     html! {
         <>
             <div class={classes!("login-page-container")}>
-                <FormLogin error_menssage={(*error_msg).clone()} on_handle_click={on_submit}  />
+                <FormLogin error_menssage={(*error_msg).clone()} on_handle_click={on_submit} btn_text={"Login".to_string()}  />
             </div>
         </>
     }
