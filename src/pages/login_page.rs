@@ -36,6 +36,8 @@ pub fn page_login() -> Html {
                 let error_msg = error_msg.clone();
                 let ctx = ctx.clone();
                 let nav = nav.clone();
+                
+                error_msg.set(None);
 
                 spawn_local( async move {
                     let res = UnifiConnect::get_admin_token(&username, &password).await;
@@ -70,7 +72,7 @@ pub fn page_login() -> Html {
     // View
     html! {
         <>
-            <div class={classes!("login-page-container")}>
+            <div class={classes!("bg-gradient-to-r", "from-orange-500", "to-orange-400", "h-screen", "w-screen", "flex", "justify-center", "items-center")}>
                 <FormLogin error_menssage={(*error_msg).clone()} on_handle_click={on_submit} btn_text={"Login".to_string()}  />
             </div>
         </>
