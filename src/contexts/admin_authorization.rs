@@ -1,5 +1,4 @@
 use yew::prelude::*;
-
 use crate::models::admin::AdminToken;
 
 // Types
@@ -33,7 +32,7 @@ pub fn admin_authorization_context(props: &PropsAdminAuthorizationContext) -> Ht
 
     // States
     let ctx = use_state(|| AdminAuthorization::default() );
-   
+
     // Callbacks
     let set_token_callback = {
         let ctx = ctx.clone();

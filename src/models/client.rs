@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 
 // Enums
@@ -15,6 +15,7 @@ pub enum ClientStatus {
 #[allow(dead_code)]
 #[derive(Deserialize, Debug, PartialEq, Clone)]
 pub struct Client {
+    #[serde(rename = "_id", deserialize_with = "mongodb_id")]
     pub id: String,
     pub client_type: String,
 
@@ -35,4 +36,18 @@ pub struct Client {
     pub time_connection: String,
     pub start_time: String,
     pub approver: String,
+}
+
+// Functions
+fn mongodb_id<'de, D>(deserializer: D) -> Result<String, D::Error>
+    where D: Deserializer<'de>,
+{
+    let value = serde_json::Value::deserialize(deserializer)?;
+    
+    Ok (
+        value.get("$oid")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_owned())
+        .unwrap_or("".to_string())
+    )
 }

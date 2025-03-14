@@ -103,7 +103,7 @@ impl UnifiConnect {
             "minutes": 0,
         });
 
-        let response = Request::post( format!("{}/api/admin/login", Self::URL).as_str() )
+        let response = Request::post( format!("{}/api/client/connect", Self::URL).as_str() )
             .header( "Content-Type", "application/json" )
             .header( "Authorization", format!("Bearer {}", token.token).as_str() )
             .body(data.to_string())
@@ -134,7 +134,7 @@ impl UnifiConnect {
             "minutes": 0,
         });
 
-        let response = Request::post( format!("{}/api/admin/login", Self::URL).as_str() )
+        let response = Request::post( format!("{}/api/client/connect", Self::URL).as_str() )
             .header( "Content-Type", "application/json" )
             .header( "Authorization", format!("Bearer {}", token.token).as_str() )
             .body(data.to_string())

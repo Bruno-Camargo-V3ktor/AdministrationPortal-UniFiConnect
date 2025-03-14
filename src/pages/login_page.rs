@@ -1,8 +1,7 @@
 use wasm_bindgen_futures::spawn_local;
 use yew::{classes, function_component, html, use_context, use_state, Callback, Html, SubmitEvent};
 use yew_router::hooks::use_navigator;
-
-use crate::{components::form_login::FormLogin, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::{ErrorReq, UnifiConnect}, models::admin::AdminToken, routes::Route};
+use crate::{components::form_login::FormLogin, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::UnifiConnect, routes::Route};
 
 
 // Components
@@ -40,9 +39,8 @@ pub fn page_login() -> Html {
                 error_msg.set(None);
 
                 spawn_local( async move {
-                    //let res = UnifiConnect::get_admin_token(&username, &password).await;
+                    let res = UnifiConnect::get_admin_token(&username, &password).await;
                     
-                    let res: Result<Option<AdminToken>, ErrorReq> = Ok( Some( AdminToken {token: "sasdassd".to_string() } ) );
                     match res {
                         Ok(op) => match op {
                             Some(token) => {
