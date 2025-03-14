@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::{components::admin_route_guard::AdminRouteGuard, pages::{approver_code::ApproverCodePage, login_page::LoginPage}};
+use crate::{components::admin_route_guard::AdminRouteGuard, pages::{approver_code::ApproverCodePage, login_page::LoginPage, pending_page::PendingPage}};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -21,7 +21,7 @@ pub enum Route {
 fn switch(routes: Route) -> Html { 
     match routes {
         Route::Home => html! {  <AdminRouteGuard> <></> </AdminRouteGuard> },
-        Route::Pending => html! { <AdminRouteGuard> <></> </AdminRouteGuard> },
+        Route::Pending => html! { <AdminRouteGuard> <PendingPage /> </AdminRouteGuard> },
         Route::Login => html! { <> <LoginPage /> </> },
         Route::ApproverGeneratedCode => html! { <> <ApproverCodePage /> </> },
 

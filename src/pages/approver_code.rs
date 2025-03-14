@@ -1,6 +1,6 @@
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use crate::{components::form_login::FormLogin, http::connect_api::{ErrorReq, UnifiConnect}, models::approver::ApproverCode};
+use crate::{components::form_login::FormLogin, http::connect_api::UnifiConnect, models::approver::ApproverCode};
 
 // Components
 #[function_component(ApproverCodePage)]

@@ -4,7 +4,7 @@ use yew::prelude::*;
 #[function_component(App)]
 pub fn app() -> Html {
     html! {
-        <main>
+        <main class={classes!("w-dvw", "h-dvh")}>
             <AdminAuthorizationContext>
                 <Routes />
             </ AdminAuthorizationContext>

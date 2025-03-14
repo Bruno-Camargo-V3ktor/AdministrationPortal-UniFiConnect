@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 
 // Enums
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq, Clone)]
 pub enum ClientStatus {
     Approved,
     Pending,
@@ -13,7 +13,7 @@ pub enum ClientStatus {
 
 // Structs
 #[allow(dead_code)]
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq, Clone)]
 pub struct Client {
     pub id: String,
     pub client_type: String,
