@@ -1,6 +1,6 @@
-use yew::{classes, function_component, html, Html};
-
-use crate::{components::card_client_pending::CardClientPending, models::client::Client};
+use wasm_bindgen_futures::spawn_local;
+use yew::{classes, function_component, html, use_context, use_effect_with, use_state, Html};
+use crate::{components::card_client_pending::CardClientPending, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::{ErrorReq, UnifiConnect}, models::{admin::AdminToken, client::{Client, ClientStatus}}};
 
 
 
@@ -8,32 +8,59 @@ use crate::{components::card_client_pending::CardClientPending, models::client::
 #[function_component(PendingPage)]
 pub fn pending_page() -> Html {
     
-    let client = Client {
-        id: String::from("23123123"),
-        cpf: None,
-        mac: "12:12:12:12".to_string(),
-        site: String::from("Default"),
-        email: String::from("email@example.com"),
-        phone: String::from("00123456789"),
-        status: crate::models::client::ClientStatus::Expired,
-        hostname: None,
-        tx_bytes: None,
-        rx_bytes: None,
-        approver: "Tia".to_string(),
-        full_name: "Bruno Camargo Ferreira".to_string(),
-        companion: "Leo".to_string(),
-        start_time: "12/12/12".to_string(),
-        client_type: "Visitante".to_string(),
-        time_connection: "".to_string()
-    };
+    // Hooks
+    let ctx_auth = use_context::<AdminAuthorizationCtx>().unwrap();
+    let client_list = use_state(|| Vec::<Client>::new());
+    
+    
+    // Effects
+    {
+        let client_list = client_list.clone();
+        let ctx_auth = ctx_auth.clone();
+
+        use_effect_with((), move |_| {
+            let list = client_list.clone();
+            let ctx = ctx_auth.clone();
+
+            spawn_local(async move {
+                let res = UnifiConnect::get_clients(
+                    ctx.token_admin.clone().unwrap_or( AdminToken { token: "".to_string() } )
+                ).await;
+                
+                match res {
+                    Ok(l) => {                           
+                        let pendings: Vec<Client> = l.into_iter().filter(|c| c.status == ClientStatus::Pending ).collect();
+                        list.set(pendings);
+                    },
+
+                    Err(e) => match e {
+                         ErrorReq::Unauthorized => {
+                            ctx.set_token.emit(None);
+                        },
+
+                        _ => {}
+                    }
+                }
+            });
+            
+        });
+    }
 
     // View
     html! {
         <>
         <div class={classes!("flex", "h-screen", "min-w-full", "bg-slate-200")}>
-        <CardClientPending 
-            client={ client.clone() }
-        />        
+           
+            <div class={classes!("flex", "flex-wrap", "w-full", "m-4", "content-start")}>
+                {
+                    client_list.iter().map( |c| {
+                        html! {
+                            <CardClientPending client={c.clone()} list={client_list.clone()} />
+                        }
+                    } ).collect::<Vec<Html>>() 
+                }
+            </div>
+
         </div>
         </>
     }
