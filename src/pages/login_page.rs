@@ -1,5 +1,5 @@
 use wasm_bindgen_futures::spawn_local;
-use yew::{classes, function_component, html, use_context, use_state, Callback, Html, SubmitEvent};
+use yew::{classes, function_component, html, use_context, use_effect_with, use_state, Callback, Html, SubmitEvent};
 use yew_router::hooks::use_navigator;
 use crate::{components::form_login::FormLogin, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::UnifiConnect, routes::Route};
 
@@ -67,6 +67,17 @@ pub fn page_login() -> Html {
             })
         })
     };
+    
+    // Effects
+    {
+        let ctx = admin_authorization_ctx.clone();
+        let nav = navigator.clone();
+        use_effect_with((),move |_| {
+            if ctx.token_admin.is_some() {
+                nav.push(&Route::Pending)
+            }
+        });
+    }
 
     // View
     html! {
