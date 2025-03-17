@@ -1,6 +1,7 @@
 use wasm_bindgen_futures::spawn_local;
 use yew::{classes, function_component, html, use_context, use_effect_with, use_state, Html};
-use crate::{components::card_client_pending::CardClientPending, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::{ErrorReq, UnifiConnect}, models::{admin::AdminToken, client::{Client, ClientStatus}}};
+use yew_router::hooks::use_navigator;
+use crate::{components::card_client_pending::CardClientPending, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::{ErrorReq, UnifiConnect}, models::{admin::AdminToken, client::{Client, ClientStatus}}, routes::Route};
 
 
 
@@ -11,16 +12,18 @@ pub fn pending_page() -> Html {
     // Hooks
     let ctx_auth = use_context::<AdminAuthorizationCtx>().unwrap();
     let client_list = use_state(|| Vec::<Client>::new());
-    
+    let navigator = use_navigator().unwrap();
     
     // Effects
     {
         let client_list = client_list.clone();
         let ctx_auth = ctx_auth.clone();
+        let nav = navigator.clone();
 
         use_effect_with((), move |_| {
             let list = client_list.clone();
             let ctx = ctx_auth.clone();
+            let nav = nav.clone();
 
             spawn_local(async move {
                 let res = UnifiConnect::get_clients(
@@ -36,6 +39,7 @@ pub fn pending_page() -> Html {
                     Err(e) => match e {
                          ErrorReq::Unauthorized => {
                             ctx.set_token.emit(None);
+                            nav.push(&Route::Login);
                         },
 
                         _ => {}
@@ -49,7 +53,7 @@ pub fn pending_page() -> Html {
     // View
     html! {
         <>
-        <div class={classes!("flex", "h-screen", "min-w-full", "bg-slate-200")}>
+        <div class={classes!("flex", "h-screen", "w-full", "bg-slate-200")}>
            
             <div class={classes!("flex", "flex-wrap", "w-full", "m-4", "content-start")}>
                 {

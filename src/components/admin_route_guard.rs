@@ -23,8 +23,8 @@ pub fn admin_route_guard(props: &RouteGuardProps) -> Html {
     {
         let admin_authorization = admin_authorization_ctx.clone();
 
-        use_effect_with((), move |_| {
-            if admin_authorization.token_admin.is_none() {
+        use_effect_with(admin_authorization, move |auth| {
+            if auth.token_admin.is_none() {
                 navigator.push(&Route::Login);
             } 
         });

@@ -16,7 +16,7 @@ pub struct UnifiConnect {}
 
 // Impl
 impl UnifiConnect {
-    const URL: &str = "http://10.10.2.79:8000";
+    const URL: &str = "http://localhost:8000";
 
     pub async fn generate_approver_code(username: &String, password: &String) -> Result<Option<ApproverCode>, ErrorReq>  {
         let data = json!({
