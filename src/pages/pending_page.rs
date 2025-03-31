@@ -2,7 +2,7 @@ use wasm_bindgen_futures::spawn_local;
 use yew::{classes, function_component, html, use_context, use_effect_with, use_state, Html};
 use yew_router::hooks::use_navigator;
 use crate::{components::card_client_pending::CardClientPending, contexts::admin_authorization::AdminAuthorizationCtx, http::connect_api::{ErrorReq, UnifiConnect}, models::{admin::AdminToken, client::{Client, ClientStatus}}, routes::Route};
-
+use gloo_timers::callback::Interval;
 
 
 // Components
@@ -25,28 +25,38 @@ pub fn pending_page() -> Html {
             let ctx = ctx_auth.clone();
             let nav = nav.clone();
 
-            spawn_local(async move {
+            let interval = Interval::new(5000, move || {
+                let list = list.clone();
+                let ctx_auth = ctx.clone();
+                let nav = nav.clone();
+
+                let fetch_clients = async move {
                 let res = UnifiConnect::get_clients(
-                    ctx.token_admin.clone().unwrap_or( AdminToken { token: "".to_string() } )
+                    ctx_auth.token_admin.clone().unwrap_or(AdminToken { token: "".to_string() }),
                 ).await;
-                
+
                 match res {
-                    Ok(l) => {                           
-                        let pendings: Vec<Client> = l.into_iter().filter(|c| c.status == ClientStatus::Pending ).collect();
+                    Ok(l) => {
+                        let pendings: Vec<Client> = l.into_iter().filter(|c| c.status == ClientStatus::Pending).collect();
                         list.set(pendings);
-                    },
+                    }
 
                     Err(e) => match e {
-                         ErrorReq::Unauthorized => {
-                            ctx.set_token.emit(None);
-                            nav.push(&Route::Login);
-                        },
-
-                        _ => {}
+                            ErrorReq::Unauthorized => {
+                                ctx_auth.set_token.emit(None);
+                                nav.push(&Route::Login);
+                            }
+                            _ => {}
+                        }
                     }
-                }
+                };
+
+                spawn_local(fetch_clients);
             });
-            
+
+            move || {
+                interval.cancel();
+            } 
         });
     }
 

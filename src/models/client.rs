@@ -17,7 +17,6 @@ pub enum ClientStatus {
 pub struct Client {
     #[serde(rename = "_id", deserialize_with = "mongodb_id")]
     pub id: String,
-    pub client_type: String,
 
     pub full_name: String,
     pub companion: String,
