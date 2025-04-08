@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Deserializer};
 
 
@@ -19,10 +21,9 @@ pub struct Client {
     pub id: String,
 
     pub full_name: String,
-    pub companion: String,
     pub email: String,
     pub phone: String,
-    pub cpf: Option<String>,
+    pub fields: HashMap<String, String>,
 
     pub mac: String,
     pub site: String,

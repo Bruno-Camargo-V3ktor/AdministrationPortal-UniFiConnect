@@ -109,15 +109,15 @@ pub fn card_client_pending(props: &CardClientPendingProps) -> Html {
                    { props.client.full_name.clone() } 
                 </h3>
 
-                <p>
-                    <span class={classes!("italic", "text-gray-500")}>
-                        { "Acompanhado: " }
-                    </span>
+                //<p>
+                //    <span class={classes!("italic", "text-gray-500")}>
+                //        { "Acompanhado: " }
+                //    </span>
 
-                    <span>
-                        { props.client.companion.clone() }
-                    </span>
-                </p>
+                    //<span>
+                    //    { props.client.companion.clone() }
+                    //</span>
+                //</p>
 
                 <p>
                     <span class={classes!("italic", "text-gray-500")}>
